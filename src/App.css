@@ -85,6 +85,10 @@ h2 {
   animation: slide-in-left 0.3s forwards;
 }
 
+.error-text {
+  color: red;
+}
+
 @keyframes slide-in-right {
   from {
     transform: translateX(100%);
