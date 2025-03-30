@@ -1,9 +1,15 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import "./App.css";
 
 function App() {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm();
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({ name: "", email: "" });
   const [direction, setDirection] = useState("forward");
 
   const nextStep = () => {
@@ -16,25 +22,24 @@ function App() {
     setStep((prev) => prev - 1);
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const onSubmit = (data: unknown) => {
+    console.log("Форма отправлена:", data);
   };
 
   return (
-    <div className="form-container">
+    <form onSubmit={handleSubmit(onSubmit)} className="form-container">
       <div className={`form-step ${direction}`} key={step}>
         {step === 1 && (
           <>
             <h2>Шаг 1: Имя</h2>
             <input
               type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
+              {...register("name", { required: "Введите имя" })}
               className="input-field"
               placeholder="Введите имя"
             />
-            <button onClick={nextStep} className="button next">
+            {errors.name && <p className="error-text">{errors.name.message}</p>}
+            <button onClick={nextStep} type="button" className="button next">
               Далее
             </button>
           </>
@@ -45,17 +50,24 @@ function App() {
             <h2>Шаг 2: Email</h2>
             <input
               type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
+              {...register("email", {
+                required: "Введите email",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Введите корректный email",
+                },
+              })}
               className="input-field"
               placeholder="Введите email"
             />
+            {errors.email && (
+              <p className="error-text">{errors.email.message}</p>
+            )}
             <div className="button-group">
-              <button onClick={prevStep} className="button back">
+              <button onClick={prevStep} type="button" className="button back">
                 Назад
               </button>
-              <button onClick={nextStep} className="button next">
+              <button onClick={nextStep} type="button" className="button next">
                 Далее
               </button>
             </div>
@@ -66,21 +78,23 @@ function App() {
           <>
             <h2>Шаг 3: Подтверждение</h2>
             <p>
-              <strong>Имя:</strong> {formData.name}
+              <strong>Имя:</strong> {watch("name")}
             </p>
             <p>
-              <strong>Email:</strong> {formData.email}
+              <strong>Email:</strong> {watch("email")}
             </p>
             <div className="button-group">
-              <button onClick={prevStep} className="button back">
+              <button onClick={prevStep} type="button" className="button back">
                 Назад
               </button>
-              <button className="button submit">Отправить</button>
+              <button type="submit" className="button submit">
+                Отправить
+              </button>
             </div>
           </>
         )}
       </div>
-    </div>
+    </form>
   );
 }
 
