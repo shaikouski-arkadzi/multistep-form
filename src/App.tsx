@@ -57,7 +57,13 @@ function App() {
     watch,
     formState: { errors },
     trigger,
+    setFocus,
   } = useForm<FormData>({ resolver: yupResolver(schema) });
+
+  const goToStep = (targetStep: number, field: keyof FormData) => {
+    setStep(targetStep);
+    setTimeout(() => setFocus(field), 0);
+  };
 
   const [step, setStep] = useState<number>(1);
   const [direction, setDirection] = useState<string>("forward");
@@ -186,16 +192,54 @@ function App() {
           <>
             <h2>Шаг 4: Подтверждение данных</h2>
             <p>
-              <strong>Имя:</strong> {formData.name}
+              <strong>Имя:</strong> {formData.name}{" "}
+              <button
+                className="edit-btn"
+                type="button"
+                onClick={() => goToStep(1, "name")}
+              >
+                ✏️
+              </button>
             </p>
             <p>
-              <strong>Возраст:</strong> {formData.age}
+              <strong>Возраст:</strong> {formData.age}{" "}
+              <button
+                className="edit-btn"
+                type="button"
+                onClick={() => goToStep(1, "age")}
+              >
+                ✏️
+              </button>
             </p>
             <p>
-              <strong>Email:</strong> {formData.email}
+              <strong>Email:</strong> {formData.email}{" "}
+              <button
+                className="edit-btn"
+                type="button"
+                onClick={() => goToStep(2, "email")}
+              >
+                ✏️
+              </button>
             </p>
             <p>
-              <strong>Телефон:</strong> {formData.phone}
+              <strong>Телефон:</strong> {formData.phone}{" "}
+              <button
+                className="edit-btn"
+                type="button"
+                onClick={() => goToStep(2, "phone")}
+              >
+                ✏️
+              </button>
+            </p>
+            <p>
+              <strong>Пароль:</strong> ********{" "}
+              <button
+                className="edit-btn"
+                type="button"
+                onClick={() => goToStep(3, "password")}
+              >
+                ✏️
+              </button>
             </p>
 
             <div className="button-group">

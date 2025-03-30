@@ -89,6 +89,15 @@ h2 {
   color: red;
 }
 
+.edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  margin-left: 10px;
+  transition: color 0.3s ease;
+}
+
 @keyframes slide-in-right {
   from {
     transform: translateX(100%);
