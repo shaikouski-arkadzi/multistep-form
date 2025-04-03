@@ -13,32 +13,27 @@ const ConfirmStep: React.FC<ConfirmStepProps> = ({
       <EditableField
         label="Имя"
         value={formData.name}
-        fieldName="name"
-        goToStep={goToStep}
+        goToStep={() => goToStep(1, "name")}
       />
       <EditableField
         label="Возраст"
         value={formData.age}
-        fieldName="age"
-        goToStep={goToStep}
+        goToStep={() => goToStep(1, "age")}
       />
       <EditableField
         label="Email"
         value={formData.email}
-        fieldName="email"
-        goToStep={goToStep}
+        goToStep={() => goToStep(2, "email")}
       />
       <EditableField
         label="Телефон"
         value={formData.phone}
-        fieldName="phone"
-        goToStep={goToStep}
+        goToStep={() => goToStep(2, "phone")}
       />
       <EditableField
         label="Пароль"
         value="********"
-        fieldName="password"
-        goToStep={goToStep}
+        goToStep={() => goToStep(3, "password")}
       />
     </div>
     <StepButtons isSubmitStep onPrev={prevStep} />
