@@ -1,4 +1,4 @@
-import { IFormData } from "../App";
+import { IFormData } from "../../types/formFields.types";
 
 export interface ConfirmStepProps {
   prevStep: () => void;

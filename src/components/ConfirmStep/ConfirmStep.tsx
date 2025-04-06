@@ -1,3 +1,4 @@
+import { steps } from "../../data/steps";
 import { EditableField } from "../EditableField";
 import { StepButtons } from "../StepButtons";
 import { ConfirmStepProps } from "./ConfirmStep.types";
@@ -10,31 +11,20 @@ const ConfirmStep: React.FC<ConfirmStepProps> = ({
   <>
     <h2>Шаг 4: Подтверждение данных</h2>
     <div className="confirm-data">
-      <EditableField
-        label="Имя"
-        value={formData.name}
-        goToStep={() => goToStep(1, "name")}
-      />
-      <EditableField
-        label="Возраст"
-        value={formData.age}
-        goToStep={() => goToStep(1, "age")}
-      />
-      <EditableField
-        label="Email"
-        value={formData.email}
-        goToStep={() => goToStep(2, "email")}
-      />
-      <EditableField
-        label="Телефон"
-        value={formData.phone}
-        goToStep={() => goToStep(2, "phone")}
-      />
-      <EditableField
-        label="Пароль"
-        value="********"
-        goToStep={() => goToStep(3, "password")}
-      />
+      {Object.entries(steps).map(([step, { fields }]) =>
+        fields.map(({ label, key }) => (
+          <EditableField
+            key={key}
+            label={label}
+            value={
+              key.toLowerCase().includes("password")
+                ? "********"
+                : formData[key]
+            }
+            goToStep={() => goToStep(Number(step), key)}
+          />
+        ))
+      )}
     </div>
     <StepButtons isSubmitStep onPrev={prevStep} />
   </>

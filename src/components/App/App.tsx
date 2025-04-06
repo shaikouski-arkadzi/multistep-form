@@ -1,12 +1,11 @@
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { IFormData } from "./App.types";
+import { IFormData } from "../../types/formFields.types";
 import { schema } from "../../utils/validation";
-import { PersonalInfo } from "../PersonalInfo";
-import { ContactData } from "../ContactData";
-import { Password } from "../Password";
+import { FormStep, StepNumber } from "../FormStep";
 import { ConfirmStep } from "../ConfirmStep";
+import { steps } from "../../data/steps";
 import "./App.css";
 
 function App() {
@@ -19,30 +18,28 @@ function App() {
     setFocus,
   } = useForm<IFormData>({ resolver: yupResolver(schema) });
 
-  const goToStep = (targetStep: number, field: keyof IFormData) => {
+  const [step, setStep] = useState<StepNumber>(1);
+  const [direction, setDirection] = useState<string>("forward");
+
+  const goToStep = (targetStep: StepNumber, field: keyof IFormData) => {
     setStep(targetStep);
     setTimeout(() => setFocus(field), 0);
   };
 
-  const [step, setStep] = useState<number>(1);
-  const [direction, setDirection] = useState<string>("forward");
-
   const nextStep = async () => {
-    let fieldsToValidate: (keyof IFormData)[] = [];
-    if (step === 1) fieldsToValidate = ["name", "age"];
-    if (step === 2) fieldsToValidate = ["email", "phone"];
-    if (step === 3) fieldsToValidate = ["password", "confirmPassword"];
+    const currentStep = steps[step];
+    const fieldsToValidate = currentStep.fields.map((field) => field.key);
 
-    const isValid = await trigger(fieldsToValidate);
+    const isValid = await trigger(fieldsToValidate); // Проводим валидацию полей на шаге
     if (isValid) {
       setDirection("forward");
-      setStep((prev) => prev + 1);
+      setStep((prev) => (prev + 1) as StepNumber);
     }
   };
 
   const prevStep = () => {
     setDirection("backward");
-    setStep((prev) => prev - 1);
+    setStep((prev) => (prev - 1) as StepNumber);
   };
 
   const onSubmit = (data: IFormData) => {
@@ -54,33 +51,14 @@ function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="form-container">
       <div className={`form-step ${direction}`} key={step}>
-        {step === 1 && (
-          <PersonalInfo
+        {step <= 3 ? (
+          <FormStep
+            stepNumber={step}
             register={register}
             errors={errors}
             nextStep={nextStep}
           />
-        )}
-
-        {step === 2 && (
-          <ContactData
-            register={register}
-            errors={errors}
-            nextStep={nextStep}
-            prevStep={prevStep}
-          />
-        )}
-
-        {step === 3 && (
-          <Password
-            register={register}
-            errors={errors}
-            nextStep={nextStep}
-            prevStep={prevStep}
-          />
-        )}
-
-        {step === 4 && (
+        ) : (
           <ConfirmStep
             formData={formData}
             goToStep={goToStep}
