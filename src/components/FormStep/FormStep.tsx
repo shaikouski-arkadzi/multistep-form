@@ -8,6 +8,7 @@ const FormStep: React.FC<FormStepProps> = ({
   register,
   errors,
   nextStep,
+  prevStep,
 }) => {
   const { title, fields } = steps[stepNumber];
 
@@ -26,7 +27,7 @@ const FormStep: React.FC<FormStepProps> = ({
         />
       ))}
 
-      <StepButtons onNext={nextStep} />
+      <StepButtons onNext={nextStep} onPrev={prevStep} />
     </>
   );
 };

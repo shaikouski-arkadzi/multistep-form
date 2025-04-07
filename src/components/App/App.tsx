@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { IFormData } from "../../types/formFields.types";
 import { schema } from "../../utils/validation";
@@ -19,10 +20,17 @@ function App() {
   } = useForm<IFormData>({ resolver: yupResolver(schema) });
 
   const [step, setStep] = useState<StepNumber>(1);
-  const [direction, setDirection] = useState<string>("forward");
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const isLast = !(step in steps);
+    navigate(isLast ? "/step/confirm" : `/step/${step}`);
+  }, [step, navigate]);
 
   const goToStep = (targetStep: StepNumber, field: keyof IFormData) => {
     setStep(targetStep);
+
     setTimeout(() => setFocus(field), 0);
   };
 
@@ -32,14 +40,14 @@ function App() {
 
     const isValid = await trigger(fieldsToValidate); // Проводим валидацию полей на шаге
     if (isValid) {
-      setDirection("forward");
       setStep((prev) => (prev + 1) as StepNumber);
     }
   };
 
   const prevStep = () => {
-    setDirection("backward");
-    setStep((prev) => (prev - 1) as StepNumber);
+    if (step > 1) {
+      setStep((prev) => (prev - 1) as StepNumber);
+    }
   };
 
   const onSubmit = (data: IFormData) => {
@@ -50,21 +58,39 @@ function App() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="form-container">
-      <div className={`form-step ${direction}`} key={step}>
-        {step <= 3 ? (
-          <FormStep
-            stepNumber={step}
-            register={register}
-            errors={errors}
-            nextStep={nextStep}
+      <div className="form-step" key={step}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/step/1" replace />} />
+
+          {Object.entries(steps).map(([step]) => (
+            <Route
+              key={step}
+              path={`/step/${step}`}
+              element={
+                <FormStep
+                  stepNumber={parseInt(step)}
+                  register={register}
+                  errors={errors}
+                  nextStep={nextStep}
+                  prevStep={prevStep}
+                />
+              }
+            />
+          ))}
+
+          <Route
+            path="/step/confirm"
+            element={
+              <ConfirmStep
+                formData={formData}
+                goToStep={goToStep}
+                prevStep={prevStep}
+              />
+            }
           />
-        ) : (
-          <ConfirmStep
-            formData={formData}
-            goToStep={goToStep}
-            prevStep={prevStep}
-          />
-        )}
+
+          <Route path="*" element={<Navigate to="/step/1" replace />} />
+        </Routes>
       </div>
     </form>
   );

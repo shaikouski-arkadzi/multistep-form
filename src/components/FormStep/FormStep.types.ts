@@ -9,4 +9,5 @@ export interface FormStepProps {
   register: UseFormRegister<IFormData>;
   errors: FieldErrors<IFormData>;
   nextStep: () => void;
+  prevStep: () => void;
 }
