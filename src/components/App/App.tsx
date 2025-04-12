@@ -24,31 +24,8 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isLast = !(step in steps);
-    navigate(isLast ? "/step/confirm" : `/step/${step}`);
+    navigate(!(step in steps) ? "/step/confirm" : `/step/${step}`);
   }, [step, navigate]);
-
-  const goToStep = (targetStep: StepNumber, field: keyof IFormData) => {
-    setStep(targetStep);
-
-    setTimeout(() => setFocus(field), 0);
-  };
-
-  const nextStep = async () => {
-    const currentStep = steps[step];
-    const fieldsToValidate = currentStep.fields.map((field) => field.key);
-
-    const isValid = await trigger(fieldsToValidate); // Проводим валидацию полей на шаге
-    if (isValid) {
-      setStep((prev) => (prev + 1) as StepNumber);
-    }
-  };
-
-  const prevStep = () => {
-    if (step > 1) {
-      setStep((prev) => (prev - 1) as StepNumber);
-    }
-  };
 
   const onSubmit = (data: IFormData) => {
     console.log("Форма отправлена:", data);
@@ -62,17 +39,17 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/step/1" replace />} />
 
-          {Object.entries(steps).map(([step]) => (
+          {Object.entries(steps).map(([stepNum]) => (
             <Route
-              key={step}
-              path={`/step/${step}`}
+              key={stepNum}
+              path={`/step/${stepNum}`}
               element={
                 <FormStep
-                  stepNumber={parseInt(step)}
+                  step={parseInt(stepNum) as StepNumber}
                   register={register}
                   errors={errors}
-                  nextStep={nextStep}
-                  prevStep={prevStep}
+                  trigger={trigger}
+                  setStep={setStep}
                 />
               }
             />
@@ -83,8 +60,8 @@ function App() {
             element={
               <ConfirmStep
                 formData={formData}
-                goToStep={goToStep}
-                prevStep={prevStep}
+                setStep={setStep}
+                setFocus={setFocus}
               />
             }
           />

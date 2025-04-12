@@ -1,16 +1,32 @@
 import { InputField } from "../InputField";
 import { StepButtons } from "../StepButtons";
-import { FormStepProps } from "./FormStep.types";
+import { FormStepProps, StepNumber } from "./FormStep.types";
 import { steps } from "../../data/steps";
 
 const FormStep: React.FC<FormStepProps> = ({
-  stepNumber,
+  step,
   register,
   errors,
-  nextStep,
-  prevStep,
+  setStep,
+  trigger,
 }) => {
-  const { title, fields } = steps[stepNumber];
+  const { title, fields } = steps[step];
+
+  const nextStep = async () => {
+    const currentStep = steps[step];
+    const fieldsToValidate = currentStep.fields.map((field) => field.key);
+
+    const isValid = await trigger(fieldsToValidate); // Проводим валидацию полей на шаге
+    if (isValid) {
+      setStep((prev) => (prev + 1) as StepNumber);
+    }
+  };
+
+  const prevStep = () => {
+    if (step > 1) {
+      setStep((prev) => (prev - 1) as StepNumber);
+    }
+  };
 
   return (
     <>
