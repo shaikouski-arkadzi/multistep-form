@@ -2,14 +2,18 @@ import { InputField } from "../InputField";
 import { StepButtons } from "../StepButtons";
 import { FormStepProps, StepNumber } from "./FormStep.types";
 import { steps } from "../../data/steps";
+import { useFormContextData } from "../../context/FormContext";
 
-const FormStep: React.FC<FormStepProps> = ({
-  step,
-  register,
-  errors,
-  setStep,
-  trigger,
-}) => {
+const FormStep: React.FC<FormStepProps> = ({ step }) => {
+  const {
+    setStep,
+    form: {
+      register,
+      trigger,
+      formState: { errors },
+    },
+  } = useFormContextData();
+
   const { title, fields } = steps[step];
 
   const nextStep = async () => {

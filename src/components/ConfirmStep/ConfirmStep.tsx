@@ -1,15 +1,16 @@
+import { useFormContextData } from "../../context/FormContext";
 import { steps } from "../../data/steps";
 import { IFormData } from "../../types/formFields.types";
 import { EditableField } from "../EditableField";
 import { StepNumber } from "../FormStep";
 import { StepButtons } from "../StepButtons";
-import { ConfirmStepProps } from "./ConfirmStep.types";
 
-const ConfirmStep: React.FC<ConfirmStepProps> = ({
-  formData,
-  setFocus,
-  setStep,
-}) => {
+const ConfirmStep: React.FC = () => {
+  const {
+    setStep,
+    form: { watch, setFocus },
+  } = useFormContextData();
+
   const goToStep = (targetStep: StepNumber, field: keyof IFormData) => {
     setStep(targetStep);
 
@@ -28,7 +29,7 @@ const ConfirmStep: React.FC<ConfirmStepProps> = ({
               value={
                 key.toLowerCase().includes("password")
                   ? "********"
-                  : formData[key]
+                  : watch()[key]
               }
               goToStep={() => goToStep(Number(step), key)}
             />
